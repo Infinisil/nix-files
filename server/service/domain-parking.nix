@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
 let
   domains =
@@ -58,7 +58,7 @@ let
     "zentrain.io"
   ];
   makeVirtualHost = domain:
-  {
+  lib.nameValuePair domain {
     hostName = domain;
     serverAliases = [("www." + domain)];
     enableSSL = false;
@@ -75,6 +75,6 @@ let
   };
 in
 {
-  services.httpd.virtualHosts = (map makeVirtualHost domains);
+  services.httpd.virtualHosts = lib.listToAttrs (map makeVirtualHost domains);
   environment.etc = (builtins.listToAttrs (map makeIndexFile domains));
 }
